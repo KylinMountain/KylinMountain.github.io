@@ -24,8 +24,9 @@
 <meta property="og:description" content="跨域1. 什么是跨域跨源资源共享 (CORS, Cross-Origin Resource Share) （或通俗地译为跨域资源共享）是一种基于HTTP 头的机制，该机制通过允许服务器标示除了它自己以外的其它origin（域，协议和端口），这样浏览器可以访问加载这些资源。跨源资源共享还通过一种机制来检查服务器是否会允许要发送的真实请求，该机制通过浏览器发起一个到服务器托管的跨源资源的”预检”请求。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/%E8%B7%A8%E5%9F%9F/CORS_principle.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/%E8%B7%A8%E5%9F%9F/simple-req-updated.png">
 <meta property="article:published_time" content="2022-07-11T08:03:30.000Z">
-<meta property="article:modified_time" content="2022-07-11T08:06:38.661Z">
+<meta property="article:modified_time" content="2022-07-11T08:21:39.262Z">
 <meta property="article:author" content="羽">
 <meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary_large_image">
@@ -219,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.2k 字
+          5.1k 字
         
       </span>
     
@@ -298,11 +299,11 @@
 <li><code>application/x-www-form-urlencoded</code></li>
 </ul>
 <p>举例</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> invocation = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XMLHttpRequest</span>();<br><span class="hljs-keyword">var</span> url = <span class="hljs-string">&#x27;http://bar.other/resources/public-data/&#x27;</span>;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">callOtherDomain</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">if</span>(invocation) &#123;<br>    invocation.<span class="hljs-title function_">open</span>(<span class="hljs-string">&#x27;GET&#x27;</span>, url, <span class="hljs-literal">true</span>);<br>    invocation.<span class="hljs-property">onreadystatechange</span> = handler;<br>    invocation.<span class="hljs-title function_">send</span>();<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<img src="/2022/07/11/%E8%B7%A8%E5%9F%9F/simple-req-updated.png" srcset="/img/loading.gif" lazyload class="">
 
-<p>{ % asset_img simple-req-updated.png %}</p>
-<p>请求</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/resources/public-data/</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>bar.other<br><span class="hljs-attribute">User-Agent</span><span class="hljs-punctuation">: </span>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.1b3pre) Gecko/20081130 Minefield/3.1b3pre<br><span class="hljs-attribute">Accept</span><span class="hljs-punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8<br><span class="hljs-attribute">Accept-Language</span><span class="hljs-punctuation">: </span>en-us,en;q=0.5<br><span class="hljs-attribute">Accept-Encoding</span><span class="hljs-punctuation">: </span>gzip,deflate<br><span class="hljs-attribute">Accept-Charset</span><span class="hljs-punctuation">: </span>ISO-8859-1,utf-8;q=0.7,*;q=0.7<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>keep-alive<br><span class="hljs-attribute">Referer</span><span class="hljs-punctuation">: </span>http://foo.example/examples/access-control/simpleXSInvocation.html<br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>http://foo.example<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> invocation = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XMLHttpRequest</span>();<br><span class="hljs-keyword">var</span> url = <span class="hljs-string">&#x27;http://bar.other/resources/public-data/&#x27;</span>;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">callOtherDomain</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">if</span>(invocation) &#123;<br>    invocation.<span class="hljs-title function_">open</span>(<span class="hljs-string">&#x27;GET&#x27;</span>, url, <span class="hljs-literal">true</span>);<br>    invocation.<span class="hljs-property">onreadystatechange</span> = handler;<br>    invocation.<span class="hljs-title function_">send</span>();<br>  &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs awk"><br><br>请求<br><br>```http<br>GET <span class="hljs-regexp">/resources/</span>public-data<span class="hljs-regexp">/ HTTP/</span><span class="hljs-number">1.1</span><br>Host: bar.other<br>User-Agent: Mozilla<span class="hljs-regexp">/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.1b3pre) Gecko/</span><span class="hljs-number">20081130</span> Minefield/<span class="hljs-number">3.1</span>b3pre<br>Accept: text<span class="hljs-regexp">/html,application/</span>xhtml+xml,application<span class="hljs-regexp">/xml;q=0.9,*/</span>*;q=<span class="hljs-number">0.8</span><br>Accept-Language: en-us,en;q=<span class="hljs-number">0.5</span><br>Accept-Encoding: gzip,deflate<br>Accept-Charset: ISO-<span class="hljs-number">8859</span>-<span class="hljs-number">1</span>,utf-<span class="hljs-number">8</span>;q=<span class="hljs-number">0.7</span>,*;q=<span class="hljs-number">0.7</span><br>Connection: keep-alive<br>Referer: http:<span class="hljs-regexp">//</span>foo.example<span class="hljs-regexp">/examples/</span>access-control/simpleXSInvocation.html<br>Origin: http:<span class="hljs-regexp">//</span>foo.example<br></code></pre></td></tr></table></figure>
 
 <p>响应</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">200</span> OK<br><span class="hljs-attribute">Date</span><span class="hljs-punctuation">: </span>Mon, 01 Dec 2008 00:23:53 GMT<br><span class="hljs-attribute">Server</span><span class="hljs-punctuation">: </span>Apache/2.0.61<br><span class="hljs-attribute">Access-Control-Allow-Origin</span><span class="hljs-punctuation">: </span>*<br><span class="hljs-attribute">Keep-Alive</span><span class="hljs-punctuation">: </span>timeout=2, max=100<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>Keep-Alive<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/xml<br><br><span class="language-crmsh">[<span class="hljs-keyword">XML</span> <span class="hljs-title">Data</span>]</span><br></code></pre></td></tr></table></figure>
@@ -386,6 +387,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2022/07/11/hexo%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="hexo基本使用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">hexo基本使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
