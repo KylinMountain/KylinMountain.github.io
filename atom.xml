@@ -6,7 +6,7 @@
   <link href="https://kylinmountain.github.io/atom.xml" rel="self"/>
   
   <link href="https://kylinmountain.github.io/"/>
-  <updated>2022-05-16T03:06:19.529Z</updated>
+  <updated>2022-07-11T06:36:59.775Z</updated>
   <id>https://kylinmountain.github.io/</id>
   
   <author>
@@ -15,6 +15,40 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>FLV格式标准</title>
+    <link href="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/"/>
+    <id>https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/</id>
+    <published>2022-07-11T06:09:04.000Z</published>
+    <updated>2022-07-11T06:36:59.775Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="FLV-格式标准"><a href="#FLV-格式标准" class="headerlink" title="FLV 格式标准"></a>FLV 格式标准</h1><p>FLV文件由文件头和FLV文件内容组成</p><h2 id="1-FLV文件头格式"><a href="#1-FLV文件头格式" class="headerlink" title="1. FLV文件头格式"></a>1. FLV文件头格式</h2><p>共9个字节</p><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160242611.png" class=""><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128173509458.png" class=""><h2 id="2-FLV文件内容格式"><a href="#2-FLV文件内容格式" class="headerlink" title="2. FLV文件内容格式"></a>2. FLV文件内容格式</h2><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160430735.png" class=""><p>就是上一个TAG的大小+FLVTAG+上一个TAG的大小+FLVTAG+….</p><p>其中FLVTAG类型就是以下的数据格式。</p><h3 id="2-1-FLVTAG类型"><a href="#2-1-FLVTAG类型" class="headerlink" title="2.1 FLVTAG类型"></a>2.1 FLVTAG类型</h3><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160610656.png" class=""><p>在FLVTAG的TagType指定了TAG的Data数据。其中TAG的Data根据TAG类型确定，如下面2.2，2.3和2.4。</p><h3 id="2-2-VIDEODATA视频数据格式"><a href="#2-2-VIDEODATA视频数据格式" class="headerlink" title="2.2 VIDEODATA视频数据格式"></a>2.2 VIDEODATA视频数据格式</h3><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160934664.png" class=""><p>可以看到FLV针对H264类型，做了不少的定制数据。那么H265呢？FLV不支持，但是金山云做了扩展<a href="https://github.com/ksvc/FFmpeg/wiki%E3%80%82">https://github.com/ksvc/FFmpeg/wiki。</a></p><p>所以主要改变的地方就是VideoData，将编码标识为12，新增HEVCPacketType。如果AVCPacketType 是0，那么后面跟着的数据就是AVCDecoderConfigurationRecord.</p><h3 id="2-3-AUDIODATA音频数据格式"><a href="#2-3-AUDIODATA音频数据格式" class="headerlink" title="2.3 AUDIODATA音频数据格式"></a>2.3 AUDIODATA音频数据格式</h3><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128161843506.png" class=""><p>可以看到 它支持G711，AAC，MP3等常见格式，对AAC做了特别的字段支持就像H264一样。</p><h3 id="2-4-ScriptData-脚本数据"><a href="#2-4-ScriptData-脚本数据" class="headerlink" title="2.4 ScriptData 脚本数据"></a>2.4 ScriptData 脚本数据</h3><p>ScriptData常见的展现方式就是存储FLV的Metadata，存储的数据格式一般是AMF数据。</p><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128162033813.png" class=""><p>AMF数据格式：AMF（Action Message Format），即操作消息格式，基于http方式传输，是一种二进制的数据格式。主要用于数据交互和远程过程调用。它的设计是为了把actionscript里面的数据(包括Object, Array, Boolean, Number等)序列化成二进制数据，然后把这段数据随意发送给其他接收方程序，比如发给远程的服务器，在远程服务器那边，可以把这段数据给还原出来，以此达到一个数据传输的作用。</p><p>AMF主要可以更有效的序列化数据，相比于JSON，他更高效。具体解析的方式，详见这篇文章<a href="https://blog.csdn.net/zhenwu1981/article/details/55224733">常用AMF解析</a></p><p>ScriptData中常见的是一个字符串onMetaData，然后跟着一个Map，内容如下</p><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody><tr><td>duration</td><td>double</td><td>文件的总长度,单位秒</td></tr><tr><td>width</td><td>double</td><td>视频的宽度，单位像素</td></tr><tr><td>height</td><td>double</td><td>视频的高度，单位像素</td></tr><tr><td>videodatarate</td><td>double</td><td>视频的比特率，单位kb&#x2F;s</td></tr><tr><td>framerate</td><td>double</td><td>视频帧率</td></tr><tr><td>videocodecid</td><td>double</td><td>视频的编码ID</td></tr><tr><td>audiosamplerate</td><td>double</td><td>音频的采样率</td></tr><tr><td>audiosamplesize</td><td>double</td><td>音频的解析度</td></tr><tr><td>stereo</td><td>bool</td><td>音频的是否为立体声</td></tr><tr><td>audiocodecid</td><td>double</td><td>音频的编码ID</td></tr><tr><td>filesize</td><td>double</td><td>文件的总大小，单位bytes</td></tr></tbody></table><h2 id="3-实例"><a href="#3-实例" class="headerlink" title="3. 实例"></a>3. 实例</h2><p>从camera上生成一个FLV:</p><p><code>ffmpeg -i rtsp://user:pass@192.168.2.119:554/unicast/c2/s1/live -c copy -f flv output.flv</code></p><p>使用命令</p><p><code>ffprobe -v trace -i output.flv</code></p><p>可即可分析flv的文件格式</p><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128170852017.png" class=""><p>首先看前9个字节，这是FLV文件头</p><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128175137939.png" class=""><p>46 4c 56 是FLV</p><p>01 是FLV版本1</p><p>05 是00000101 前五位保留位，固定位0，第六位1表示存在音频，第七位保留标记，固定位0，第八位，视频标记类型，1表示存在视频。</p><p>接下来4个字节 是数据偏移，就是这个头的字节数，00 00 00 09 表示9个字节。</p><p>后面就是FLV文件内容</p><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128175238627.png" class=""><p>4字节上一个TAG的大小 00 00 00 00，一直是0</p><p>接下来是FLVTAG</p><p>第一个字节：0x12，即00010010，表示18，保留2位，滤镜1位，5位是0x12，表明它是脚本数据。</p><p>接下来3个字节，TAG的DATA数据的大小，00 01 40，就是320。</p><p>接下来3个字节，是时间戳，00 00 00.</p><p>接下来1个字节，是扩展时间戳，00</p><p>接下来3个字节，是流ID，都是0，固定为0。</p><p>之后就是Script Data部分，按照数据长度是320个字节。</p><p>类型：02 表示String，接下来怎么解析AMF，我不清楚，回头再看。这320个字节如下。</p><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128180109101.png" class=""><p>然后我们接下来，就到上一个TAG的Size的部分，这个是4个字节，其值为00 00 01 4b。其中Data部分是320，加上前面11个字节，331，就是0x014b。</p><p>再然后就是新的TAG了</p><p>第一个字节，09表示视频TAG。</p><p>然后是3字节的数据大小，00 00 27 就是39</p><p>然后是3字节的时间戳，00 00 00</p><p>然后1字节的扩展时间戳，00</p><p>然后3字节的流ID，00 00 00.</p><p>然后就是VideoTagData了，一共39个字节</p><p>接下里的1个字节，是帧类型:编码标识，0x17，就是0001 0111，所以4位帧类型是1，表示关键帧。后4位表示编码标识，7表示H264.</p><p>接下里的1个字节，是H264的AVCPacketType，0x00，表示H.264的Sequence Header</p><p>接下来的3个字节，是H264的CTS（CompositionTime），00 00 00 ，表示0.</p><p>然后是压缩过的视频数据，从014d开始的34个字节。</p><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128182343917.png" class=""><p>接下来4个字节，就是上一个DataSize，大小为0x32，就是50</p><p>然后第一个字节0x08,表示音频。</p><p>接下来3个字节，0x000201 表示数据大小513</p><p>接下来3个字节，表示时间戳，0x000000</p><p>接下来1个字节，表示扩展时间戳，0x00.</p><p>接下来3个字节，表示StreamId, 0x000000.</p><p>然后TAGDATA。</p><p>第1个字节0x82 表示，0x82，10000010，前四位8表示G711 mu-law，后2位，表示00表示5.5KHz，后1位1表示采样大小，16位采样，最后一位表示音频类型，0表示Mono Sound。</p><p>然后第二个字节以及之后的就是具体的音频编码数据。</p><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128182433587.png" class=""><p>最后，使用Stream Analyzer来分析一下</p><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128175659504.png" class="">]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;FLV-格式标准&quot;&gt;&lt;a href=&quot;#FLV-格式标准&quot; class=&quot;headerlink&quot; title=&quot;FLV 格式标准&quot;&gt;&lt;/a&gt;FLV 格式标准&lt;/h1&gt;&lt;p&gt;FLV文件由文件头和FLV文件内容组成&lt;/p&gt;
+&lt;h2 id=&quot;1-FLV文件头格式&quot;&gt;&lt;a</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>深入Golang中channel实现</title>
+    <link href="https://kylinmountain.github.io/2022/05/17/%E6%B7%B1%E5%85%A5Golang%E4%B8%ADchannel%E5%AE%9E%E7%8E%B0/"/>
+    <id>https://kylinmountain.github.io/2022/05/17/%E6%B7%B1%E5%85%A5Golang%E4%B8%ADchannel%E5%AE%9E%E7%8E%B0/</id>
+    <published>2022-05-17T03:03:27.000Z</published>
+    <updated>2022-05-17T03:03:27.760Z</updated>
+    
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>你知道Golang中Map的装载因子吗</title>

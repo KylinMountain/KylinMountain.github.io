@@ -16,23 +16,36 @@
   <meta name="author" content="羽">
   <meta name="keywords" content="Golang">
   
-    <meta name="description" content="网上很多博客都对map的内部实现讲了很多，很多人可能看完都绕晕了，看完可能装载因子是多少，扩容倍率是多少还是没搞清楚。没错我就是这样子，QAQ。 直接给出结果，装载因子6.5，扩容倍率是2倍，采用拉链法。这个拉链法并不是传统意义上的数组加链表，而是数组桶加数组链表的形式。接下来我们一步一步简单说明好了。 map的创建，一般是通过make来初始化的，编译时会将make替换为如下的runtime ma">
+    <meta name="description" content="FLV 格式标准FLV文件由文件头和FLV文件内容组成 1. FLV文件头格式共9个字节     2. FLV文件内容格式  就是上一个TAG的大小+FLVTAG+上一个TAG的大小+FLVTAG+…. 其中FLVTAG类型就是以下的数据格式。 2.1 FLVTAG类型  在FLVTAG的TagType指定了TAG的Data数据。其中TAG的Data根据TAG类型确定，如下面2.2，2.3和2.4">
 <meta property="og:type" content="article">
-<meta property="og:title" content="你知道Golang中Map的装载因子吗">
-<meta property="og:url" content="https://kylinmountain.github.io/2022/05/16/%E4%BD%A0%E7%9F%A5%E9%81%93Golang%E4%B8%ADMap%E7%9A%84%E8%A3%85%E8%BD%BD%E5%9B%A0%E5%AD%90%E5%90%97/index.html">
+<meta property="og:title" content="FLV格式标准">
+<meta property="og:url" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/index.html">
 <meta property="og:site_name" content="自由之羽">
-<meta property="og:description" content="网上很多博客都对map的内部实现讲了很多，很多人可能看完都绕晕了，看完可能装载因子是多少，扩容倍率是多少还是没搞清楚。没错我就是这样子，QAQ。 直接给出结果，装载因子6.5，扩容倍率是2倍，采用拉链法。这个拉链法并不是传统意义上的数组加链表，而是数组桶加数组链表的形式。接下来我们一步一步简单说明好了。 map的创建，一般是通过make来初始化的，编译时会将make替换为如下的runtime ma">
+<meta property="og:description" content="FLV 格式标准FLV文件由文件头和FLV文件内容组成 1. FLV文件头格式共9个字节     2. FLV文件内容格式  就是上一个TAG的大小+FLVTAG+上一个TAG的大小+FLVTAG+…. 其中FLVTAG类型就是以下的数据格式。 2.1 FLVTAG类型  在FLVTAG的TagType指定了TAG的Data数据。其中TAG的Data根据TAG类型确定，如下面2.2，2.3和2.4">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kylinmountain.github.io/2022/05/16/%E4%BD%A0%E7%9F%A5%E9%81%93Golang%E4%B8%ADMap%E7%9A%84%E8%A3%85%E8%BD%BD%E5%9B%A0%E5%AD%90%E5%90%97/map.webp">
-<meta property="article:published_time" content="2022-05-16T02:55:59.000Z">
-<meta property="article:modified_time" content="2022-05-16T03:06:19.529Z">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160242611.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128173509458.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160430735.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160610656.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160934664.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128161843506.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128162033813.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128170852017.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128175137939.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128175238627.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128180109101.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128182343917.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128182433587.png">
+<meta property="og:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128175659504.png">
+<meta property="article:published_time" content="2022-07-11T06:09:04.000Z">
+<meta property="article:modified_time" content="2022-07-11T06:36:59.775Z">
 <meta property="article:author" content="羽">
 <meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kylinmountain.github.io/2022/05/16/%E4%BD%A0%E7%9F%A5%E9%81%93Golang%E4%B8%ADMap%E7%9A%84%E8%A3%85%E8%BD%BD%E5%9B%A0%E5%AD%90%E5%90%97/map.webp">
+<meta name="twitter:image" content="https://kylinmountain.github.io/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160242611.png">
   
   
-  <title>你知道Golang中Map的装载因子吗 - 自由之羽</title>
+  <title>FLV格式标准 - 自由之羽</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -196,7 +209,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="你知道Golang中Map的装载因子吗"></span>
+            <span id="subtitle" data-typed-text="FLV格式标准"></span>
           
         </div>
 
@@ -207,8 +220,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-05-16 10:55" pubdate>
-          2022年5月16日 上午
+        <time datetime="2022-07-11 14:09" pubdate>
+          2022年7月11日 下午
         </time>
       </span>
     
@@ -219,7 +232,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.8k 字
+          2.4k 字
         
       </span>
     
@@ -230,7 +243,7 @@
         
         
         
-          24 分钟
+          20 分钟
         
       </span>
     
@@ -276,40 +289,165 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">你知道Golang中Map的装载因子吗</h1>
+            <h1 style="display: none">FLV格式标准</h1>
             
             <div class="markdown-body">
               
-              <p>网上很多博客都对map的内部实现讲了很多，很多人可能看完都绕晕了，看完可能装载因子是多少，扩容倍率是多少还是没搞清楚。没错我就是这样子，QAQ。</p>
-<p>直接给出结果，装载因子6.5，扩容倍率是2倍，采用拉链法。这个拉链法并不是传统意义上的数组加链表，而是数组桶加数组链表的形式。接下来我们一步一步简单说明好了。</p>
-<p>map的创建，一般是通过make来初始化的，编译时会将make替换为如下的<code>runtime makemap</code>。可以看到，它返回的是一个叫做hmap的指针，这也是为何说map是一个指针，所以参数传递放心大胆地传，内部的修改一样会影响外部的。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">makemap</span><span class="hljs-params">(t *maptype, hint <span class="hljs-type">int</span>, h *hmap)</span></span> *hmap &#123;<br>  ...<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>那么hmap长啥样呢？</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> hmap <span class="hljs-keyword">struct</span> &#123;<br>    count     <span class="hljs-type">int</span><br>    flags     <span class="hljs-type">uint8</span><br>    B         <span class="hljs-type">uint8</span><br>    noverflow <span class="hljs-type">uint16</span><br>    hash0     <span class="hljs-type">uint32</span><br>    buckets    unsafe.Pointer<br>    oldbuckets unsafe.Pointer<br>    nevacuate  <span class="hljs-type">uintptr</span><br>    extra *mapextra<br>&#125;<br></code></pre></td></tr></table></figure>
+              <h1 id="FLV-格式标准"><a href="#FLV-格式标准" class="headerlink" title="FLV 格式标准"></a>FLV 格式标准</h1><p>FLV文件由文件头和FLV文件内容组成</p>
+<h2 id="1-FLV文件头格式"><a href="#1-FLV文件头格式" class="headerlink" title="1. FLV文件头格式"></a>1. FLV文件头格式</h2><p>共9个字节</p>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160242611.png" srcset="/img/loading.gif" lazyload class="">
 
-<ul>
-<li>count 是map的元素个数</li>
-<li>flags 代表当前map的状态，是否处于写入的状态等，比如在给map的key赋值的时候，该值会被标记为写入，那么此时并发的去写入这个map时候，我们就会得到concurrent map writes这样的panic，就是通过这个标记来实现的。</li>
-<li>hash0 是计算hash时的随机数种子，在创建map时确定。</li>
-<li>B是用来计算桶的个数的，桶的个数2^B次方，而B最大为256，而桶的结构为bmap，其一共可以装载8个key value，此外每个桶，还有overflow，表示溢出桶，不多说这个。<strong>扩容就是通过将B加1</strong>，那么B加1当然就是桶的数量翻倍了。</li>
-<li>buckets 当前的桶指针，每次需要扩容时将生成新的桶，将hmap的桶指针指向新桶即可。而原来的桶将会被oldbuckets持有。<br>oldbuckets 扩容后原有的桶，被oldbuckets指向。为什么要保留旧的桶呢？这是扩容时，不需要一次性的将旧有元素拷贝到新桶内，而是通过每次访问key时候，如果发现它在旧桶内，就将它搬迁到新桶，这样就比较平滑。不会因为一次性搬迁导致系统的CPU突然上升不稳定，这种扩容方式在Redis里也较为常见。</li>
-<li>nevacute 在扩容时使用，用于标记当前桶中nevacute的数据都已经转移到新桶中了。</li>
-<li>extra 是一个数组指针，指向溢出桶的数组。<br>这里先提一下map的访问方式，访问map中的元素呢，他是通过计算key的hash值，然后与桶的数量2^B取余（其实是hash(key)&amp;2^B）取余， 得到key所在的桶的位置。桶buckets其实是一个数组，因此得到桶的位置后，我们就去桶里去比较这个key，从而获取值。</li>
-</ul>
-<p>我们看一下桶的结构bmap.</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> bmap <span class="hljs-keyword">struct</span> &#123;<br>    topbits  [<span class="hljs-number">8</span>]<span class="hljs-type">uint8</span><br>    keys     [<span class="hljs-number">8</span>]keytype<br>    values   [<span class="hljs-number">8</span>]valuetype<br>    pad      <span class="hljs-type">uintptr</span><br>    overflow <span class="hljs-type">uintptr</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128173509458.png" srcset="/img/loading.gif" lazyload class="">
 
-<p>桶内其实也是三个8元素的数组，其中topbits内存储的是，key的hash值高8位，然后以当前位置+8就得到keys的位置，再加8就得到values的位置。我们存储一个kv时候，就是先存储它的hash值高8位，然后再存储kv到相应的位置。如果存储数据到某个桶的时候，这个桶已经8个元素了，此时map并不扩容，而是将其存储到溢出桶中。溢出桶也是一个bmap。我们回到存储的过程，此时就需要将数据存储到overflo中去。但overflow是一个指针，它指向一个溢出桶的bmap。这个溢出桶bmap在哪里呢，它在hmap的extra中，extra是*mapextra。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> mapextra strcut &#123;<br>    overflow *[]*bmap<br>    oldoverflow *[]*bmap<br>    nextOverflow *bmap<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="2-FLV文件内容格式"><a href="#2-FLV文件内容格式" class="headerlink" title="2. FLV文件内容格式"></a>2. FLV文件内容格式</h2><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160430735.png" srcset="/img/loading.gif" lazyload class="">
 
-<p>extra有一个overfow的bamp 数组指针，它表示它指向一个[]bmap。所以他是一个溢出桶指针数组。我们在当前桶里bmap，在溢出的时候，就会在extra中找，是否有未使用的溢出桶，如果有就将这个bmap的溢出桶的地址赋值给bmap里的overflow。一个溢出桶也只能存储8个元素，如果溢出桶又超了怎么办呢？溢出桶和一个普通的bmap一样，他也有overflow指针，因此呢，如果溢出桶溢出了，他就在链接一个溢出桶上去（这个新的溢出桶是否还是从extra中取，我就没细看了），可以看出溢出桶其实是一个链表结构。我们仔细回想一下，就会发现，这是一个扩大版的拉链法，每个桶都有8个自带空间，然后每个桶还可以继续连接溢出桶，每个溢出桶也自带8个元素空间。</p>
-<img src="/2022/05/16/%E4%BD%A0%E7%9F%A5%E9%81%93Golang%E4%B8%ADMap%E7%9A%84%E8%A3%85%E8%BD%BD%E5%9B%A0%E5%AD%90%E5%90%97/map.webp" srcset="/img/loading.gif" lazyload class="" title="golangmap">
-<p>图片来自:<a target="_blank" rel="noopener" href="https://louyuting.blog.csdn.net/article/details/99699350%E3%80%82">https://louyuting.blog.csdn.net/article/details/99699350。</a></p>
-<p>这里，还未说到装载因子，装载因子是这样定义的，说的很清楚就是<strong>13&#x2F;2</strong>，而是否超载了是通过如下的<code>overLoadFactor来计算的</code>。这里要说的是为何装载因此是6.5呢？我们知道装载因子是<strong>元素个数&#x2F;桶的数量</strong>，每个桶最大是可以装8个冲突的元素。那么6.5意味着，每个桶内，hash冲突的元素最多是6.5个时候，再多就要超过8个了，所以该扩容了。那么为啥不是7呢，就不得而知了，估计是经验设定吧。。。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Maximum average load of a bucket that triggers growth is 6.5.</span><br><span class="hljs-comment">// Represent as loadFactorNum/loadFactDen, to allow integer math.</span><br>loadFactorNum = <span class="hljs-number">13</span><br>loadFactorDen = <span class="hljs-number">2</span><br><span class="hljs-comment">// overLoadFactor reports whether count items placed in 1&lt;&lt;B buckets is over loadFactor.</span><br><span class="hljs-comment">// overLoadFactor reports whether count items placed in 1&lt;&lt;B buckets is over loadFactor.  </span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">overLoadFactor</span><span class="hljs-params">(count <span class="hljs-type">int</span>, B <span class="hljs-type">uint8</span>)</span></span> <span class="hljs-type">bool</span> &#123;<br>  <span class="hljs-keyword">return</span> count &gt; bucketCnt &amp;&amp; <span class="hljs-type">uintptr</span>(count) &gt; loadFactorNum*  (bucketShift(B)/loadFactorDen)&#125;<br><br></code></pre></td></tr></table></figure>
-<p>除了过载，溢出桶数量过多时候，也触发map的重建。</p>
-<p>我感觉map就是这样子。。。讲了过多的内部实现，反而加剧理解的难度。</p>
-<p>关注我，不走丢哦，下篇更精彩。</p>
+<p>就是上一个TAG的大小+FLVTAG+上一个TAG的大小+FLVTAG+….</p>
+<p>其中FLVTAG类型就是以下的数据格式。</p>
+<h3 id="2-1-FLVTAG类型"><a href="#2-1-FLVTAG类型" class="headerlink" title="2.1 FLVTAG类型"></a>2.1 FLVTAG类型</h3><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160610656.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>在FLVTAG的TagType指定了TAG的Data数据。其中TAG的Data根据TAG类型确定，如下面2.2，2.3和2.4。</p>
+<h3 id="2-2-VIDEODATA视频数据格式"><a href="#2-2-VIDEODATA视频数据格式" class="headerlink" title="2.2 VIDEODATA视频数据格式"></a>2.2 VIDEODATA视频数据格式</h3><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128160934664.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>可以看到FLV针对H264类型，做了不少的定制数据。那么H265呢？FLV不支持，但是金山云做了扩展<a target="_blank" rel="noopener" href="https://github.com/ksvc/FFmpeg/wiki%E3%80%82">https://github.com/ksvc/FFmpeg/wiki。</a></p>
+<p>所以主要改变的地方就是VideoData，将编码标识为12，新增HEVCPacketType。如果AVCPacketType 是0，那么后面跟着的数据就是AVCDecoderConfigurationRecord.</p>
+
+
+<h3 id="2-3-AUDIODATA音频数据格式"><a href="#2-3-AUDIODATA音频数据格式" class="headerlink" title="2.3 AUDIODATA音频数据格式"></a>2.3 AUDIODATA音频数据格式</h3><img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128161843506.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>可以看到 它支持G711，AAC，MP3等常见格式，对AAC做了特别的字段支持就像H264一样。</p>
+<h3 id="2-4-ScriptData-脚本数据"><a href="#2-4-ScriptData-脚本数据" class="headerlink" title="2.4 ScriptData 脚本数据"></a>2.4 ScriptData 脚本数据</h3><p>ScriptData常见的展现方式就是存储FLV的Metadata，存储的数据格式一般是AMF数据。</p>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128162033813.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>AMF数据格式：AMF（Action Message Format），即操作消息格式，基于http方式传输，是一种二进制的数据格式。主要用于数据交互和远程过程调用。它的设计是为了把actionscript里面的数据(包括Object, Array, Boolean, Number等)序列化成二进制数据，然后把这段数据随意发送给其他接收方程序，比如发给远程的服务器，在远程服务器那边，可以把这段数据给还原出来，以此达到一个数据传输的作用。</p>
+<p>AMF主要可以更有效的序列化数据，相比于JSON，他更高效。具体解析的方式，详见这篇文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/zhenwu1981/article/details/55224733">常用AMF解析</a></p>
+<p>ScriptData中常见的是一个字符串onMetaData，然后跟着一个Map，内容如下</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>duration</td>
+<td>double</td>
+<td>文件的总长度,单位秒</td>
+</tr>
+<tr>
+<td>width</td>
+<td>double</td>
+<td>视频的宽度，单位像素</td>
+</tr>
+<tr>
+<td>height</td>
+<td>double</td>
+<td>视频的高度，单位像素</td>
+</tr>
+<tr>
+<td>videodatarate</td>
+<td>double</td>
+<td>视频的比特率，单位kb&#x2F;s</td>
+</tr>
+<tr>
+<td>framerate</td>
+<td>double</td>
+<td>视频帧率</td>
+</tr>
+<tr>
+<td>videocodecid</td>
+<td>double</td>
+<td>视频的编码ID</td>
+</tr>
+<tr>
+<td>audiosamplerate</td>
+<td>double</td>
+<td>音频的采样率</td>
+</tr>
+<tr>
+<td>audiosamplesize</td>
+<td>double</td>
+<td>音频的解析度</td>
+</tr>
+<tr>
+<td>stereo</td>
+<td>bool</td>
+<td>音频的是否为立体声</td>
+</tr>
+<tr>
+<td>audiocodecid</td>
+<td>double</td>
+<td>音频的编码ID</td>
+</tr>
+<tr>
+<td>filesize</td>
+<td>double</td>
+<td>文件的总大小，单位bytes</td>
+</tr>
+</tbody></table>
+<h2 id="3-实例"><a href="#3-实例" class="headerlink" title="3. 实例"></a>3. 实例</h2><p>从camera上生成一个FLV:</p>
+<p><code>ffmpeg -i rtsp://user:pass@192.168.2.119:554/unicast/c2/s1/live -c copy -f flv output.flv</code></p>
+<p>使用命令</p>
+<p><code>ffprobe -v trace -i output.flv</code></p>
+<p>可即可分析flv的文件格式</p>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128170852017.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>首先看前9个字节，这是FLV文件头</p>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128175137939.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>46 4c 56 是FLV</p>
+<p>01 是FLV版本1</p>
+<p>05 是00000101 前五位保留位，固定位0，第六位1表示存在音频，第七位保留标记，固定位0，第八位，视频标记类型，1表示存在视频。</p>
+<p>接下来4个字节 是数据偏移，就是这个头的字节数，00 00 00 09 表示9个字节。</p>
+<p>后面就是FLV文件内容</p>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128175238627.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>4字节上一个TAG的大小 00 00 00 00，一直是0</p>
+<p>接下来是FLVTAG</p>
+<p>第一个字节：0x12，即00010010，表示18，保留2位，滤镜1位，5位是0x12，表明它是脚本数据。</p>
+<p>接下来3个字节，TAG的DATA数据的大小，00 01 40，就是320。</p>
+<p>接下来3个字节，是时间戳，00 00 00.</p>
+<p>接下来1个字节，是扩展时间戳，00</p>
+<p>接下来3个字节，是流ID，都是0，固定为0。</p>
+<p>之后就是Script Data部分，按照数据长度是320个字节。</p>
+<p>类型：02 表示String，接下来怎么解析AMF，我不清楚，回头再看。这320个字节如下。</p>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128180109101.png" srcset="/img/loading.gif" lazyload class="">
+
+
+
+<p>然后我们接下来，就到上一个TAG的Size的部分，这个是4个字节，其值为00 00 01 4b。其中Data部分是320，加上前面11个字节，331，就是0x014b。</p>
+<p>再然后就是新的TAG了</p>
+<p>第一个字节，09表示视频TAG。</p>
+<p>然后是3字节的数据大小，00 00 27 就是39</p>
+<p>然后是3字节的时间戳，00 00 00</p>
+<p>然后1字节的扩展时间戳，00</p>
+<p>然后3字节的流ID，00 00 00.</p>
+<p>然后就是VideoTagData了，一共39个字节</p>
+<p>接下里的1个字节，是帧类型:编码标识，0x17，就是0001 0111，所以4位帧类型是1，表示关键帧。后4位表示编码标识，7表示H264.</p>
+<p>接下里的1个字节，是H264的AVCPacketType，0x00，表示H.264的Sequence Header</p>
+<p>接下来的3个字节，是H264的CTS（CompositionTime），00 00 00 ，表示0.</p>
+<p>然后是压缩过的视频数据，从014d开始的34个字节。</p>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128182343917.png" srcset="/img/loading.gif" lazyload class="">
+
+
+
+<p>接下来4个字节，就是上一个DataSize，大小为0x32，就是50</p>
+<p>然后第一个字节0x08,表示音频。</p>
+<p>接下来3个字节，0x000201 表示数据大小513</p>
+<p>接下来3个字节，表示时间戳，0x000000</p>
+<p>接下来1个字节，表示扩展时间戳，0x00.</p>
+<p>接下来3个字节，表示StreamId, 0x000000.</p>
+<p>然后TAGDATA。</p>
+<p>第1个字节0x82 表示，0x82，10000010，前四位8表示G711 mu-law，后2位，表示00表示5.5KHz，后1位1表示采样大小，16位采样，最后一位表示音频类型，0表示Mono Sound。</p>
+<p>然后第二个字节以及之后的就是具体的音频编码数据。</p>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128182433587.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>最后，使用Stream Analyzer来分析一下</p>
+<img src="/2022/07/11/FLV%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86/image-20220128175659504.png" srcset="/img/loading.gif" lazyload class="">
+
+
+
+
 
               
             </div>
@@ -326,8 +464,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>你知道Golang中Map的装载因子吗</div>
-      <div>https://kylinmountain.github.io/2022/05/16/你知道Golang中Map的装载因子吗/</div>
+      <div>FLV格式标准</div>
+      <div>https://kylinmountain.github.io/2022/07/11/FLV格式标准/</div>
     </div>
     <div class="license-meta">
       
@@ -339,7 +477,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年5月16日</div>
+          <div>2022年7月11日</div>
         </div>
       
       
@@ -368,15 +506,16 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
-                      <a href="/2022/05/17/%E6%B7%B1%E5%85%A5Golang%E4%B8%ADchannel%E5%AE%9E%E7%8E%B0/" title="深入Golang中channel实现">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">深入Golang中channel实现</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2022/05/17/%E6%B7%B1%E5%85%A5Golang%E4%B8%ADchannel%E5%AE%9E%E7%8E%B0/" title="深入Golang中channel实现">
+                        <span class="hidden-mobile">深入Golang中channel实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
